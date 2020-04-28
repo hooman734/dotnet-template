@@ -16,7 +16,6 @@ using EFCache;
 using EFCache.Redis;
 using Logic.Providers;
 using Logic.Services;
-using Logic.State;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -278,8 +277,6 @@ namespace Api
                         ctx.GetInstance<S3ServiceConfig>()
                     ));
                 }
-
-                config.For<StreamRipperState>().Singleton();
 
                 // Register stuff in container, using the StructureMap APIs...
                 config.Scan(_ =>
