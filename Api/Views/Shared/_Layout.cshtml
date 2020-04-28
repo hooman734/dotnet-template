@@ -20,7 +20,7 @@
     @* jQuery*@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     
-    <script src="https://cdn.jsdelivr.net/npm/@@prestashop-core/jquery.live-polyfill@1/dist/jquery.live-polyfill.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@prestashop-core/jquery.live-polyfill@1.0.3/dist/jquery.live-polyfill.min.js"></script>
     
     @* angular *@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
@@ -57,7 +57,7 @@
         <div class="collapse navbar-collapse" id="myNavbar">
             <ul class="nav navbar-nav">
                 <li class="@(ViewContext.RouteData.Matches("Home") ? "active" : "")">
-                    <a href="/">Register for Tour</a>
+                    <a href="/">Home</a>
                 </li>
                 
                 @if (HttpRequestUtility.IsAuthenticated(Context))
@@ -72,6 +72,7 @@
                 @if (!HttpRequestUtility.IsAuthenticated(Context))
                 {
                     <li><a href="~/Identity/login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+                    <li><a href="~/Identity/register"><span class="glyphicon glyphicon-log-saved"></span> Register</a></li>
                 }
                 else
                 {
@@ -83,7 +84,7 @@
     </div>
 </nav>
 
-<div class="container" ng-app="tourApp" ng-cloak>
+<div class="container" ng-app="dotnetTemplate" ng-cloak>
 
     @foreach (var errorMessage in ViewData.ModelState.Values.SelectMany(modelState => modelState.Errors).Select(x => x.ErrorMessage))
     {

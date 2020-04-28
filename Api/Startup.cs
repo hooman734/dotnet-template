@@ -38,6 +38,7 @@ using MlkPwgen;
 using Models.Constants;
 using Models.Models;
 using Newtonsoft.Json;
+using reCAPTCHA.AspNetCore;
 using StackExchange.Redis;
 using StructureMap;
 using static Dal.Utilities.ConnectionStringUtility;
@@ -245,6 +246,10 @@ namespace Api
                 config.StreamBufferCapacity = 50;
                 config.EnableDetailedErrors = true;
             });
+            
+            // Re-Captcha config
+            services.Configure<RecaptchaSettings>(_configuration.GetSection("RecaptchaSettings"));
+            services.AddTransient<IRecaptchaService, RecaptchaService>();
 
             var container = new Container(config =>
             {
