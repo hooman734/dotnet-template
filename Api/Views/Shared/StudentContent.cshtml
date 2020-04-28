@@ -1,0 +1,78 @@
+@using Models.Constants
+@model Models.Entities.Student
+
+<div>
+    @Html.TextBoxFor(x => x.Id, new {@class = "hidden"})
+
+    @if ((string) ViewData["Type"] == "Edit")
+    {
+        <div class="form-group">
+            @Html.LabelFor(x => x.DisplayId)
+            @Html.TextBoxFor(x => x.DisplayId, new {@class = "form-control", type = "text", required = "required"})
+        </div>
+    }
+    else
+    {
+        @Html.TextBoxFor(x => x.DisplayId, new {@class = "hidden"})
+    }
+    
+    <div class="form-group">
+        @Html.LabelFor(x => x.Fullname)
+        @Html.TextBoxFor(x => x.Fullname, new {@class = "form-control", type = "text", placeholder = "Enter fullname", required = "required"})
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.Email)
+        @Html.TextBoxFor(x => x.Email, new {@class = "form-control", type = "email", placeholder = "Enter email", required = "required"})
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.Phone)
+        @Html.TextBoxFor(x => x.Phone, new {@class = "form-control", type = "tel", placeholder = "Enter phone number"})
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.University)
+        @Html.DropDownListFor(x => x.University, UniversityConstants.UniversityNames.Select(x => new SelectListItem {Text = x, Value = x}), new {@class = "form-control"})
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.Major)
+        @Html.TextBoxFor(x => x.Major, new {@class = "form-control", type = "text", placeholder = "Enter major", required = "required"})
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.Country)
+        @Html.DropDownListFor(x => x.Country, CountriesConstant.Countries.Select(x => new SelectListItem {Text = x, Value = x}), new {@class = "form-control", required = "required"})
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.Interests)
+        @Html.TextBoxFor(x => x.Interests, new {@class = "form-control hidden", type = "text", placeholder = "Enter interests", value = "{{tags}}", ng_init = "tags = []", ng_model = "tags"})
+        <tags-input ng-model="tags", use-strings="true" placeholder="we can try to connect you with people having similar interests"></tags-input>
+    </div>
+
+    <div class="form-group" ng-init="isFamily = @Model.IsFamily.ToString().ToLower(); isFamily_val = isFamily">
+        @Html.LabelFor(x => x.IsFamily)
+        @Html.CheckBoxFor(x => x.IsFamily, new {@class = "form-control hidden", ng_model = "isFamily_val"})
+        <toggle class="pull-right" ng-model="isFamily" on="Yes" off="No" onstyle="btn-success" offstyle="btn-default" ng-change="isFamily_val = isFamily"></toggle>
+    </div>
+
+    <div ng-show="isFamily" class="form-group">
+        @Html.LabelFor(x => x.FamilySize)
+        @Html.TextBoxFor(x => x.FamilySize, new {@class = "form-control", type = "number", placeholder = "1", min = "1", max = "10"})
+    </div>
+
+    <div ng-show="isFamily" class="form-group" ng-init="needCarSeat = @Model.NeedCarSeat.ToString().ToLower(); needCarSeat_val = needCarSeat">
+        @Html.LabelFor(x => x.NeedCarSeat)
+        @Html.CheckBoxFor(x => x.NeedCarSeat, new {@class = "form-control hidden", ng_model = "needCarSeat_val"})
+        <toggle class="pull-right" ng-model="needCarSeat" on="Yes" off="No" onstyle="btn-success" offstyle="btn-default" ng-change="needCarSeat_val = needCarSeat"></toggle>
+    </div>
+
+    <div class="form-group" ng-init="kosherFood = @Model.KosherFood.ToString().ToLower(); kosherFood_val = kosherFood">
+        @Html.LabelFor(x => x.KosherFood)
+        @Html.CheckBoxFor(x => x.KosherFood, new {@class = "form-control hidden", ng_model = "kosherFood_val"})
+        <toggle class="pull-right" ng-model="kosherFood" on="Yes" off="No" onstyle="btn-success" offstyle="btn-default" ng-change="kosherFood_val = kosherFood"></toggle>
+    </div>
+
+</div>

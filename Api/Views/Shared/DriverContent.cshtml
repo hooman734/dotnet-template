@@ -1,0 +1,65 @@
+@using Models.Enums
+@model Models.Entities.Driver
+
+<div ng-init="requireNavigator = true; role = true;">
+    @Html.TextBoxFor(x => x.Id, new {@class = "hidden"})
+
+    @Html.TextBoxFor(x => x.Year, new {@class = "hidden"})
+    
+    @if ((string) ViewData["Type"] == "Edit")
+    {
+        <div class="form-group">
+            @Html.LabelFor(x => x.DisplayId)
+            @Html.TextBoxFor(x => x.DisplayId, new {@class = "form-control", type = "text", required = "required"})
+        </div>
+    }
+    else
+    {
+        @Html.TextBoxFor(x => x.DisplayId, new {@class = "hidden"})
+    }
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.Fullname)
+        @Html.TextBoxFor(x => x.Fullname, new {@class = "form-control", type = "text", placeholder = "Enter fullname", required = "required"})
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.Email)
+        @Html.TextBoxFor(x => x.Email, new {@class = "form-control", type = "email", placeholder = "Enter email", required = "required"})
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.Phone)
+        @Html.TextBoxFor(x => x.Phone, new {@class = "form-control", type = "tel", placeholder = "Enter phone number", required = "required"})
+    </div>
+
+    <div class="form-group" ng-init="role = @((Model.Role == RolesEnum.Driver).ToString().ToLower())">
+        @Html.LabelFor(x => x.Role)
+        @Html.TextBoxFor(x => x.Role, new {@class = "form-control hidden", ng_model = "role_val"})
+        <toggle class="pull-right" ng-model="role" on="Driver" off="Navigator" onstyle="btn-success" offstyle="btn-primary" ng-change="role_val = role ? 'Driver' : 'Navigator'"></toggle>
+    </div>
+
+    <div ng-if="role">
+        <div class="form-group">
+            @Html.LabelFor(x => x.Capacity)
+            @Html.TextBoxFor(x => x.Capacity, new {@class = "form-control", type = "number", min = "1", max = "7", placeholder = "Enter capacity", required = "required"})
+        </div>
+          
+        <div class="form-group" ng-init="haveChildSeat = @Model.HaveChildSeat.ToString().ToLower(); haveChildSeat_val = haveChildSeat">
+            @Html.LabelFor(x => x.HaveChildSeat)
+            @Html.CheckBoxFor(x => x.HaveChildSeat, new {@class = "form-control hidden", ng_model = "haveChildSeat_val"})
+            <toggle class="pull-right" ng-model="haveChildSeat" on="Yes" off="No" onstyle="btn-success" offstyle="btn-danger" ng-change="haveChildSeat_val = haveChildSeat"></toggle>
+        </div>
+
+        <div class="form-group" ng-init="requireNavigator = @Model.RequireNavigator.ToString().ToLower(); requireNavigator_val = requireNavigator">
+            @Html.LabelFor(x => x.RequireNavigator)
+            @Html.CheckBoxFor(x => x.RequireNavigator, new {@class = "form-control hidden", ng_model = "requireNavigator_val"})
+            <toggle class="pull-right" ng-model="requireNavigator" on="Yes" off="No" onstyle="btn-success" offstyle="btn-danger" ng-change="requireNavigator_val = requireNavigator"></toggle>
+        </div>
+
+        <div class="form-group" ng-if="!requireNavigator">
+            @Html.LabelFor(x => x.Navigator)
+            @Html.TextBoxFor(x => x.Navigator, new {@class = "form-control", required = "required", placeholder = "Enter navigator fullname"})
+        </div>
+    </div>
+</div>

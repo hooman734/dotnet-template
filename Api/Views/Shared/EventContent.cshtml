@@ -1,0 +1,25 @@
+@model Models.Entities.Event
+
+@Html.TextBoxFor(x => x.Id, new { @class = "hidden" })
+        
+@Html.TextBoxFor(x => x.Year, new { @class = "hidden" })
+        
+<div class="form-group">
+    @Html.LabelFor(x => x.Name)
+    @Html.TextBoxFor(x => x.Name, new { @class = "form-control", type = "text", placeholder = "Enter name", required = "required"})
+</div>
+        
+<div class="form-group">
+    @Html.LabelFor(x => x.Description)
+    @Html.TextAreaFor(x => x.Description, new { @class = "form-control", type = "text", placeholder = "Enter description", required = "required"})
+</div>
+        
+<div class="form-group">
+    @Html.LabelFor(x => x.Address)
+    @Html.TextBoxFor(x => x.Address, new { @class = "form-control", type = "text", placeholder = "Enter address", required = "required"})
+</div>
+        
+<div class="form-group">
+    @Html.LabelFor(x => x.DateTime)
+    @Html.EditorFor(x => x.DateTime, new { @class = "form-control", type = "datetime-local", placeholder = "Enter date", required = "required"})
+</div>

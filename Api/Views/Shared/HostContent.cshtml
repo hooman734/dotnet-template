@@ -1,0 +1,27 @@
+@model Models.Entities.Host
+
+<div ng-init="requireNavigator = true; role = true;">
+    @Html.TextBoxFor(x => x.Id, new {@class = "hidden"})
+    
+    @Html.TextBoxFor(x => x.Year, new {@class = "hidden"})
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.Fullname)
+        @Html.TextBoxFor(x => x.Fullname, new {@class = "form-control", type = "text", placeholder = "Enter fullname", required = "required"})
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.Email)
+        @Html.TextBoxFor(x => x.Email, new {@class = "form-control", type = "email", placeholder = "Enter email", required = "required"})
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.Phone)
+        @Html.TextBoxFor(x => x.Phone, new {@class = "form-control", type = "tel", placeholder = "Enter phone number", required = "required"})
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.Address)
+        @Html.TextBoxFor(x => x.Address, new {@class = "form-control", type = "text", placeholder = "Enter address", required = "required"})
+    </div>
+</div>
