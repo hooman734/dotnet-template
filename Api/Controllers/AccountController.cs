@@ -1,4 +1,8 @@
+using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Models.Models;
@@ -11,23 +15,24 @@ namespace API.Controllers
     [ApiExplorerSettings(IgnoreApi = true)]
     [Route("[controller]")]
     public class IdentityController : Controller
-    {        
+    {
         private readonly UserManager<User> _userManager;
-        
+
         private readonly SignInManager<User> _signInManager;
-        
+
         private readonly RoleManager<IdentityRole<int>> _roleManager;
-        
+
         private readonly IRecaptchaService _recaptcha;
 
-        public IdentityController(UserManager<User> userManager, SignInManager<User> signInManager, RoleManager<IdentityRole<int>> roleManager, IRecaptchaService recaptcha)
+        public IdentityController(UserManager<User> userManager, SignInManager<User> signInManager,
+            RoleManager<IdentityRole<int>> roleManager, IRecaptchaService recaptcha)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManager = roleManager;
             _recaptcha = recaptcha;
         }
-        
+
         /// <summary>
         ///     View page to login
         /// </summary>
@@ -42,13 +47,13 @@ namespace API.Controllers
                 var prevError = (string) TempData["Error"];
 
                 ModelState.AddModelError("", prevError);
-                
+
                 TempData.Clear();
             }
-            
+
             return View();
         }
-        
+
         /// <summary>
         ///     Handles login the user
         /// </summary>
@@ -59,24 +64,52 @@ namespace API.Controllers
         public async Task<IActionResult> LoginHandler(LoginViewModel loginViewModel)
         {
             var recaptcha = await _recaptcha.Validate(Request);
-            
+
             if (!recaptcha.success)
             {
                 TempData["Error"] = "There was an error validating recatpcha. Please try again!";
-                
+
                 return RedirectToAction("Login");
             }
 
-            var result = await base.Login(loginViewModel);
+            // Ensure the username and password is valid.
+            var result = await _userManager.FindByNameAsync(loginViewModel.Username);
 
-            if (result)
+            if (result == null || !await _userManager.CheckPasswordAsync(result, loginViewModel.Password))
             {
-                return Redirect(Url.Content("~/"));
+                TempData["Error"] = "There was an error while logging-in. Please try again!";
+
+                return RedirectToAction("Login");
             }
 
-            return RedirectToAction("NotAuthenticated");
+            await _signInManager.SignInAsync(result, true);
+
+            // Generate and issue a JWT token
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Name, result.Email)
+            };
+
+            var identity = new ClaimsIdentity(
+                claims, CookieAuthenticationDefaults.AuthenticationScheme,
+                ClaimTypes.Name, ClaimTypes.Role);
+
+            var principal = new ClaimsPrincipal(identity);
+
+            var authProperties = new AuthenticationProperties
+            {
+                AllowRefresh = true,
+                ExpiresUtc = DateTimeOffset.Now.AddDays(1),
+                IsPersistent = true
+            };
+
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(principal), authProperties);
+            
+            return Redirect(Url.Content("~/"));
         }
-        
+
         /// <summary>
         ///     View page to register
         /// </summary>
@@ -91,13 +124,13 @@ namespace API.Controllers
                 var prevError = (string) TempData["Error"];
 
                 ModelState.AddModelError("", prevError);
-                
+
                 TempData.Clear();
             }
-            
+
             return View();
         }
-        
+
         /// <summary>
         ///     Register the user
         /// </summary>
@@ -108,25 +141,33 @@ namespace API.Controllers
         public async Task<IActionResult> RegisterHandler(RegisterViewModel registerViewModel)
         {
             var recaptcha = await _recaptcha.Validate(Request);
-            
+
             if (!recaptcha.success)
             {
                 TempData["Error"] = "There was an error validating recatpcha. Please try again!";
 
                 return RedirectToAction("Register");
             }
-            
-            // Save the user
-            var result = await Register(registerViewModel);
 
-            if (result)
+            var user = new User
             {
-                return RedirectToAction("Login");
-            }
+                UserName = registerViewModel.Username,
+                Name = registerViewModel.Name,
+                Email = registerViewModel.Email
+            };
 
-            return RedirectToAction("Register");
+            var result = await _userManager.CreateAsync(user, registerViewModel.Password);
+
+            if (!result.Succeeded)
+            {
+                TempData["Error"] = "There was an error while registering. Please try again!";
+
+                return RedirectToAction("Register");
+            }
+            
+            return RedirectToAction("Login");
         }
-        
+
         /// <summary>
         ///     Not authenticated view
         /// </summary>
@@ -148,7 +189,9 @@ namespace API.Controllers
         [SwaggerOperation("Logout")]
         public async Task<IActionResult> Logout()
         {
-            await base.Logout();
+            await _signInManager.SignOutAsync();
+
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
             return RedirectToAction("Login");
         }
