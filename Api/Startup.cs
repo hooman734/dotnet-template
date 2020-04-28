@@ -16,6 +16,7 @@ using EFCache;
 using EFCache.Redis;
 using Logic.Providers;
 using Logic.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -84,7 +85,7 @@ namespace Api
                 opt.PopupShowTrivial = true;
                 opt.PopupShowTimeWithChildren = true;
             });
-            
+
             services.AddHttpsRedirection(options => options.HttpsPort = 443);
 
             // If environment is localhost, then enable CORS policy, otherwise no cross-origin access
@@ -103,7 +104,7 @@ namespace Api
             services.Configure<JwtSettings>(_configuration.GetSection("JwtSettings"));
 
             services.AddLogging();
-            
+
             services.AddRouting(options => options.LowercaseUrls = true);
 
             if (_env.IsDevelopment())
@@ -139,35 +140,38 @@ namespace Api
                 {
                     c.IncludeXmlComments(xmlPath);
                 }
-                
+
                 c.AddSecurityDefinition("Bearer", // Name the security scheme
                     new OpenApiSecurityScheme
                     {
                         Description = "JWT Authorization header using the Bearer scheme.",
-                        Type = SecuritySchemeType.Http, // We set the scheme type to http since we're using bearer authentication
-                        Scheme = "bearer" // The name of the HTTP Authorization scheme to be used in the Authorization header. In this case "bearer".
+                        Type = SecuritySchemeType
+                            .Http, // We set the scheme type to http since we're using bearer authentication
+                        Scheme =
+                            "bearer" // The name of the HTTP Authorization scheme to be used in the Authorization header. In this case "bearer".
                     });
             });
 
             services.AddMvc(x =>
-            {
-                x.ModelValidatorProviders.Clear();
-
-                // Not need to have https
-                x.RequireHttpsPermanent = false;
-
-                // Allow anonymous for localhost
-                if (_env.IsDevelopment())
                 {
-                    x.Filters.Add<AllowAnonymousFilter>();
-                }
+                    x.ModelValidatorProviders.Clear();
 
-                // Exception filter attribute
-                x.Filters.Add<ExceptionFilterAttribute>();
-            }).AddNewtonsoftJson(x =>
-            {
-                x.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-            }).AddRazorPagesOptions(x => x.Conventions.ConfigureFilter(new IgnoreAntiforgeryTokenAttribute()));
+                    // Not need to have https
+                    x.RequireHttpsPermanent = false;
+
+                    // Allow anonymous for localhost
+                    if (_env.IsDevelopment())
+                    {
+                        x.Filters.Add<AllowAnonymousFilter>();
+                    }
+
+                    // Exception filter attribute
+                    x.Filters.Add<ExceptionFilterAttribute>();
+                }).AddNewtonsoftJson(x =>
+                    {
+                        x.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                    })
+                .AddRazorPagesOptions(x => x.Conventions.ConfigureFilter(new IgnoreAntiforgeryTokenAttribute()));
 
             services.AddDbContext<EntityDbContext>(opt =>
             {
@@ -214,14 +218,12 @@ namespace Api
             if (_env.IsDevelopment() && string.IsNullOrEmpty(jwtSetting.Key))
             {
                 jwtSetting.Key = PasswordGenerator.Generate(length: 100, allowed: Sets.Alphanumerics);
-                
+
                 IdentityModelEventSource.ShowPII = true;
             }
-            
-            services.AddAuthentication(options => {
-                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                })
+
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(x => x.Cookie.MaxAge = TimeSpan.FromMinutes(60))
                 .AddJwtBearer(config =>
                 {
                     config.RequireHttpsMetadata = false;
@@ -247,7 +249,7 @@ namespace Api
             var container = new Container(config =>
             {
                 config.For<JwtSettings>().Use(jwtSetting).Singleton();
-                
+
                 // If environment is localhost then use mock email service
                 if (_env.IsDevelopment())
                 {
@@ -270,7 +272,7 @@ namespace Api
                     // Create S3 client
                     config.For<IAmazonS3>().Use(() => new AmazonS3Client(credentials, RegionEndpoint.USEast1));
                     config.For<S3ServiceConfig>().Use(new S3ServiceConfig(bucketName, prefix));
-                    
+
                     config.For<IS3Service>().Use(ctx => new S3Service(
                         ctx.GetInstance<ILogger<S3Service>>(),
                         ctx.GetInstance<IAmazonS3>(),
@@ -304,7 +306,7 @@ namespace Api
         public void Configure(IApplicationBuilder app)
         {
             app.UseMiniProfiler();
-            
+
             app.UseCors("CorsPolicy");
 
             app.UseResponseCompression();

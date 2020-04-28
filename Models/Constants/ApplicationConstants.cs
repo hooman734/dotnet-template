@@ -4,7 +4,7 @@ namespace Models.Constants
 {
     public static class ApplicationConstants
     {
-        public const string ConfigFile = "stream-subscription-config.json";
+        public const string ConfigFile = "dotnet-template-config.json";
         
         public static readonly Encoding DefaultEncoding = Encoding.UTF8;
 

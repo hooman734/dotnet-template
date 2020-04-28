@@ -9,14 +9,13 @@ namespace Models.Constants
 
         public static void UpdateGlobalConfigs(GlobalConfigViewModel globalConfigViewModel)
         {
-            StartedStreams = globalConfigViewModel.StartedStreams;
         }
 
         public static GlobalConfigViewModel ToViewModel()
         {
             return new GlobalConfigViewModel
             {
-                StartedStreams = StartedStreams
+
             };
         }
     }
