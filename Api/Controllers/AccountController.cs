@@ -87,7 +87,8 @@ namespace Api.Controllers
             // Generate and issue a JWT token
             var claims = new[]
             {
-                new Claim(ClaimTypes.Name, result.Email)
+                new Claim(ClaimTypes.Name, result.UserName),
+                new Claim(ClaimTypes.Email, result.Email)
             };
 
             var identity = new ClaimsIdentity(

@@ -78,16 +78,16 @@ namespace Api
         /// <returns></returns>
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            // services.AddMiniProfiler(opt =>
-            // {
-            //     // opt.RouteBasePath = "/profiler";
-            //     opt.ShouldProfile = _ => true;
-            //     opt.ShowControls = true;
-            //     opt.StackMaxLength = short.MaxValue;
-            //     opt.PopupStartHidden = false;
-            //     opt.PopupShowTrivial = true;
-            //     opt.PopupShowTimeWithChildren = true;
-            // });
+             services.AddMiniProfiler(opt =>
+             {
+                 opt.RouteBasePath = "/profiler";
+                 opt.ShouldProfile = _ => true;
+                 opt.ShowControls = true;
+                 opt.StackMaxLength = short.MaxValue;
+                 opt.PopupStartHidden = false;
+                 opt.PopupShowTrivial = true;
+                 opt.PopupShowTimeWithChildren = true;
+             });
 
             services.AddHttpsRedirection(options => options.HttpsPort = 443);
 
@@ -165,7 +165,7 @@ namespace Api
                     // Allow anonymous for localhost
                     if (_env.IsDevelopment())
                     {
-                        x.Filters.Add<AllowAnonymousFilter>();
+                     //   x.Filters.Add<AllowAnonymousFilter>();
                     }
 
                     // Exception filter attribute
@@ -239,7 +239,7 @@ namespace Api
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSetting.Key))
                     };
                 });
-
+            
             services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
 
             services.AddSignalR(config =>

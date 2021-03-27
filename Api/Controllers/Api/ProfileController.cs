@@ -8,7 +8,6 @@ using Models.ViewModels.Api;
 
 namespace Api.Controllers.Api
 {
-    [ApiExplorerSettings(IgnoreApi = true)]
     [Authorize]
     [ApiController]
     [Route("Api/[controller]")]
