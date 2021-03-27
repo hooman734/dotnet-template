@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Logic.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Models.Models;
@@ -10,6 +11,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace Api.Controllers.Api
 {
+    // [ApiExplorerSettings(IgnoreApi = true)]
     [Authorize]
     [Route("api/[controller]")]
     public class UserController : Controller
@@ -32,7 +34,7 @@ namespace Api.Controllers.Api
         [HttpGet]
         [Route("")]
         [SwaggerOperation("GetAll")]
-        [ProducesResponseType(typeof(IEnumerable<>), 200)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<User>))]
         public async Task<IActionResult> GetAll()
         {
             var user = await _userManager.FindByEmailAsync(User.Identity.Name);

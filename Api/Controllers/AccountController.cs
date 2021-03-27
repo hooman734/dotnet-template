@@ -10,7 +10,7 @@ using Models.ViewModels.Identities;
 using reCAPTCHA.AspNetCore;
 using Swashbuckle.AspNetCore.Annotations;
 
-namespace API.Controllers
+namespace Api.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
     [Route("[controller]")]

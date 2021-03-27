@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Models.Models;
 using static Dal.Utilities.ConnectionStringUtility;
 
-namespace Dal.Utilities
+namespace Dal
 {
     public sealed class EntityDbContext: IdentityDbContext<User, IdentityRole<int>, int>, IDesignTimeDbContextFactory<EntityDbContext>
     {

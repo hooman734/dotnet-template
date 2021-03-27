@@ -8,12 +8,14 @@ using Amazon.S3;
 using Api.Attributes;
 using Api.Configs;
 using Api.Extensions;
+using Dal;
 using Dal.Configs;
 using Dal.Interfaces;
 using Dal.ServiceApi;
 using Dal.Utilities;
 using EFCache;
 using EFCache.Redis;
+using EfCoreRepository.Extensions;
 using Logic.Providers;
 using Logic.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -76,16 +78,16 @@ namespace Api
         /// <returns></returns>
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.AddMiniProfiler(opt =>
-            {
-                // opt.RouteBasePath = "/profiler";
-                opt.ShouldProfile = _ => true;
-                opt.ShowControls = true;
-                opt.StackMaxLength = short.MaxValue;
-                opt.PopupStartHidden = false;
-                opt.PopupShowTrivial = true;
-                opt.PopupShowTimeWithChildren = true;
-            });
+            // services.AddMiniProfiler(opt =>
+            // {
+            //     // opt.RouteBasePath = "/profiler";
+            //     opt.ShouldProfile = _ => true;
+            //     opt.ShowControls = true;
+            //     opt.StackMaxLength = short.MaxValue;
+            //     opt.PopupStartHidden = false;
+            //     opt.PopupShowTrivial = true;
+            //     opt.PopupShowTimeWithChildren = true;
+            // });
 
             services.AddHttpsRedirection(options => options.HttpsPort = 443);
 
@@ -251,6 +253,8 @@ namespace Api
             services.Configure<RecaptchaSettings>(_configuration.GetSection("RecaptchaSettings"));
             services.AddTransient<IRecaptchaService, RecaptchaService>();
 
+            services.AddEfRepository<EntityDbContext>(x => x.Profiles(Assembly.Load("Dal")));
+
             var container = new Container(config =>
             {
                 config.For<JwtSettings>().Use(jwtSetting).Singleton();
@@ -310,7 +314,7 @@ namespace Api
         /// <param name="app"></param>
         public void Configure(IApplicationBuilder app)
         {
-            app.UseMiniProfiler();
+            //app.UseMiniProfiler();
 
             app.UseCors("CorsPolicy");
 
