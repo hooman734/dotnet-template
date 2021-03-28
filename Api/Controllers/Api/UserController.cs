@@ -37,7 +37,7 @@ namespace Api.Controllers.Api
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<User>))]
         public async Task<IActionResult> GetAll()
         {
-            var user = await _userManager.FindByEmailAsync(User.Identity.Name);
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
 
             var users = (await _userLogic.GetAll()).Select(x => x.Id == user.Id ? x.ToAnonymousObject() : x.Obfuscate());
 

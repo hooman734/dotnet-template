@@ -139,7 +139,7 @@ namespace Api.Controllers.Api
         [SwaggerOperation("Refresh")]
         public async Task<IActionResult> Refresh()
         {
-            var user = await _userManager.FindByEmailAsync(User.Identity.Name);
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
                 
             var (token, expires) = ResolveToken(user);
 
